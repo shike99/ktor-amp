@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  database:
+    image: postgres:11.4-alpine
+    volumes:
+      - database:/var/lib/postgresql/data
+    environment:
+      TZ: Asia/Tokyo
+    expose:
+      - 5432
+
+  application:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    environment:
+      TZ: Asia/Tokyo
+    ports:
+      - 8080:8080
+    command: java -jar ktor-amp-application.jar -server
+                -XX:+UnlockExperimentalVMOptions
+                -XX:+UseCGroupMemoryLimitForHeap
+                -XX:InitialRAMFraction=2
+                -XX:MinRAMFraction=2
+                -XX:MaxRAMFraction=2
+                -XX:+UseG1GC
+                -XX:MaxGCPauseMillis=100
+                -XX:+UseStringDeduplication
+    volumes:
+      - ./build/libs/ktor-amp-application.jar:/var/www/ktor-amp-application.jar
+    depends_on:
+      - database
+
+volumes:
+  database:
