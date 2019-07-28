@@ -13,7 +13,7 @@ services:
   application:
     build:
       context: ./
-      dockerfile: ./Dockerfile
+      dockerfile: docker/application/Dockerfile
     environment:
       TZ: Asia/Tokyo
     ports:
@@ -28,9 +28,23 @@ services:
                 -XX:MaxGCPauseMillis=100
                 -XX:+UseStringDeduplication
     volumes:
-      - ./build/libs/ktor-amp-application.jar:/var/www/ktor-amp-application.jar
+      - ./:/var/www
+      - application-jar:/var/www/
     depends_on:
       - database
+      - gradle
+
+  gradle:
+    build:
+      context: ./
+      dockerfile: docker/gradle/Dockerfile
+    environment:
+      TZ: Asia/Tokyo
+    command: ./gradlew -t build
+    volumes:
+      - ./:/var/www/
+      - application-jar:/var/www/build/libs/
 
 volumes:
   database:
+  application-jar:

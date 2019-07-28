@@ -8,8 +8,10 @@ import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import ktor.amp.infrastructures.Database
 
 fun main(args: Array<String>) {
+    Database.bootstrap()
     embeddedServer(Netty, port = 8080, module = Application::module).start()
 }
 
