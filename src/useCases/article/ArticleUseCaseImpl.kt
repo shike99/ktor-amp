@@ -13,13 +13,15 @@ class ArticleUseCaseImpl: ArticleUseCase {
     override fun findById(id: EntityID<Int>): ArticleRepository = ArticleRepository(id)
 
     override fun create(): ArticleRepository? {
+        var article: ArticleRepository? = null
         transaction {
             addLogger(StdOutSqlLogger)
-            val article = ArticleRepository.new {
+            article = ArticleRepository.new {
                 title = "title"
                 description = "description"
-                user = UserRepository(1)
+                user = UserRepository.findById(1)
             }
         }
+        return article
     }
 }
